@@ -1,0 +1,5 @@
+sudo -H pip install keras
+sudo apt-get install libhdf5-serial-dev
+sudo -H pip install h5py
+
+
