@@ -12,8 +12,8 @@ matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import os
 
-_file_train = 'training.csv'
-_file_test = 'test.csv'
+_file_train = './data/training.csv'
+_file_test = './data/test.csv'
 _num_of_epoch = 100
 _learning_rate_start = 0.03
 _learning_rate_end = 0.001
