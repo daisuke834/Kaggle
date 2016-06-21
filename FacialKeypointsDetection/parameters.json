@@ -1,0 +1,155 @@
+{
+    "left_eyebrow_outer_end_x": [
+        [
+            0.001
+        ]
+    ], 
+    "left_eyebrow_outer_end_y": [
+        [
+            0.001
+        ]
+    ], 
+    "left_eyebrow_inner_end_y": [
+        [
+            0.001
+        ]
+    ], 
+    "left_eyebrow_inner_end_x": [
+        [
+            0.001
+        ]
+    ], 
+    "right_eyebrow_outer_end_x": [
+        [
+            0.003
+        ]
+    ], 
+    "right_eyebrow_outer_end_y": [
+        [
+            0.03
+        ]
+    ], 
+    "mouth_left_corner_y": [
+        [
+            0.001
+        ]
+    ], 
+    "mouth_left_corner_x": [
+        [
+            0.003
+        ]
+    ], 
+    "right_eye_outer_corner_y": [
+        [
+            0.03
+        ]
+    ], 
+    "left_eye_outer_corner_y": [
+        [
+            0.001
+        ]
+    ], 
+    "left_eye_outer_corner_x": [
+        [
+            0.003
+        ]
+    ], 
+    "left_eye_center_y": [
+        [
+            0.03
+        ]
+    ], 
+    "left_eye_center_x": [
+        [
+            0.003
+        ]
+    ], 
+    "mouth_right_corner_y": [
+        [
+            0.001
+        ]
+    ], 
+    "mouth_right_corner_x": [
+        [
+            0.001
+        ]
+    ], 
+    "mouth_center_bottom_lip_y": [
+        [
+            0.003
+        ]
+    ], 
+    "mouth_center_bottom_lip_x": [
+        [
+            0.001
+        ]
+    ], 
+    "right_eye_outer_corner_x": [
+        [
+            0.001
+        ]
+    ], 
+    "right_eye_center_y": [
+        [
+            0.003
+        ]
+    ], 
+    "right_eye_center_x": [
+        [
+            0.003
+        ]
+    ], 
+    "right_eye_inner_corner_x": [
+        [
+            0.001
+        ]
+    ], 
+    "right_eye_inner_corner_y": [
+        [
+            0.0003
+        ], 
+        [
+            0.001
+        ]
+    ], 
+    "right_eyebrow_inner_end_y": [
+        [
+            0.003
+        ]
+    ], 
+    "right_eyebrow_inner_end_x": [
+        [
+            0.003
+        ]
+    ], 
+    "mouth_center_top_lip_x": [
+        [
+            0.003
+        ]
+    ], 
+    "mouth_center_top_lip_y": [
+        [
+            0.003
+        ]
+    ], 
+    "left_eye_inner_corner_x": [
+        [
+            0.003
+        ]
+    ], 
+    "left_eye_inner_corner_y": [
+        [
+            0.003
+        ]
+    ], 
+    "nose_tip_x": [
+        [
+            0.03
+        ]
+    ], 
+    "nose_tip_y": [
+        [
+            0.003
+        ]
+    ]
+}

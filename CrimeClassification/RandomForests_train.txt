@@ -1,0 +1,63 @@
+_X (878049L, 23L)
+_X_test (884262L, 23L)
+_y (878049L,)
+***Start Training***
+Fitting 3 folds for each of 6 candidates, totalling 18 fits
+[CV] n_estimators=20, max_depth=10 ...................................
+[CV] .......................... n_estimators=20, max_depth=10 -  23.3s
+[CV] n_estimators=20, max_depth=10 ...................................
+[CV] .......................... n_estimators=20, max_depth=10 -  22.7s
+[CV] n_estimators=20, max_depth=10 ...................................
+[CV] .......................... n_estimators=20, max_depth=10 -  22.8s
+[CV] n_estimators=50, max_depth=10 ...................................
+[CV] .......................... n_estimators=50, max_depth=10 -  56.6s
+[CV] n_estimators=50, max_depth=10 ...................................
+[CV] .......................... n_estimators=50, max_depth=10 -  56.2s
+[CV] n_estimators=50, max_depth=10 ...................................
+[CV] .......................... n_estimators=50, max_depth=10 -  55.7s
+[CV] n_estimators=100, max_depth=10 ..................................
+[CV] ......................... n_estimators=100, max_depth=10 - 4.0min
+[CV] n_estimators=100, max_depth=10 ..................................
+[CV] ......................... n_estimators=100, max_depth=10 - 3.9min
+[CV] n_estimators=100, max_depth=10 ..................................
+[CV] ......................... n_estimators=100, max_depth=10 - 3.8min
+[CV] n_estimators=20, max_depth=None .................................
+[CV] ........................ n_estimators=20, max_depth=None -  53.9s
+[CV] n_estimators=20, max_depth=None .................................
+[CV] ........................ n_estimators=20, max_depth=None -  51.5s
+[CV] n_estimators=20, max_depth=None .................................
+[CV] ........................ n_estimators=20, max_depth=None -  50.8s
+[CV] n_estimators=50, max_depth=None .................................
+[CV] ........................ n_estimators=50, max_depth=None - 9.4min
+[CV] n_estimators=50, max_depth=None .................................
+[CV] ........................ n_estimators=50, max_depth=None - 8.3min
+[CV] n_estimators=50, max_depth=None .................................
+[CV] ........................ n_estimators=50, max_depth=None - 8.7min
+[CV] n_estimators=100, max_depth=None ................................
+[CV] ....................... n_estimators=100, max_depth=None -19.0min
+[CV] n_estimators=100, max_depth=None ................................
+[CV] ....................... n_estimators=100, max_depth=None -21.1min
+[CV] n_estimators=100, max_depth=None ................................
+[CV] ....................... n_estimators=100, max_depth=None -17.1min
+time for learning:6576.50199986sec (109.608366664min)
+Best Score (Valid Set)=0.287141150437, Best Param={'n_estimators': 100, 'max_depth': None}
+***End Training***
+	{'n_estimators': 20, 'max_depth': 10} 	0.247708271406
+	{'n_estimators': 50, 'max_depth': 10} 	0.247806215826
+	{'n_estimators': 100, 'max_depth': 10} 	0.247316493726
+	{'n_estimators': 20, 'max_depth': None} 	0.272815070685
+	{'n_estimators': 50, 'max_depth': None} 	0.282805401521
+	{'n_estimators': 100, 'max_depth': None} 	0.287141150437
+	{'n_estimators': 20, 'max_depth': 10} 	0.247708271406
+	{'n_estimators': 50, 'max_depth': 10} 	0.247806215826
+	{'n_estimators': 100, 'max_depth': 10} 	0.247316493726
+	{'n_estimators': 20, 'max_depth': None} 	0.272815070685
+	{'n_estimators': 50, 'max_depth': None} 	0.282805401521
+	{'n_estimators': 100, 'max_depth': None} 	0.287141150437
+	{'n_estimators': 20, 'max_depth': 10} 	0.247708271406
+	{'n_estimators': 50, 'max_depth': 10} 	0.247806215826
+	{'n_estimators': 100, 'max_depth': 10} 	0.247316493726
+	{'n_estimators': 20, 'max_depth': None} 	0.272815070685
+	{'n_estimators': 50, 'max_depth': None} 	0.282805401521
+	{'n_estimators': 100, 'max_depth': None} 	0.287141150437
+***Start Predicting***

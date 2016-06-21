@@ -1,0 +1,14 @@
+_X (878049, 23)
+_X_test (884262, 23)
+_X_meta (878049, 62)
+_X_test_meta (884262, 62)
+_y (878049,)
+Does not perform Grid Search
+***Start Learning on Best Parameter***
+_best_learning_rate 0.3
+_best_n_estimators 300
+time for Learning:4010.36293983sec (66.8393823306min)
+***End Learning on Best Parameter***
+***Start Predicting***
+39
+time for prediction:119.589668036sec (1.99316113393min)

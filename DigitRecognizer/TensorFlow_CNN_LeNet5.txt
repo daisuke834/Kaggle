@@ -1,0 +1,20 @@
+number of train dataset: 33600
+number of valid dataset: 8400
+*****************************
+Start Learning
+alpha=0.06,	lambda=0.0001,	ValidAccuracy=0.311904761905,	Num_of_errors=5780,	Num_of_points=8400
+alpha=0.06,	lambda=0.0003,	ValidAccuracy=0.98119047619,	Num_of_errors=158,	Num_of_points=8400
+alpha=0.06,	lambda=0.001,	ValidAccuracy=0.110714285714,	Num_of_errors=7470,	Num_of_points=8400
+alpha=0.1,	lambda=0.0001,	ValidAccuracy=0.110714285714,	Num_of_errors=7470,	Num_of_points=8400
+alpha=0.1,	lambda=0.0003,	ValidAccuracy=0.983452380952,	Num_of_errors=139,	Num_of_points=8400
+alpha=0.1,	lambda=0.001,	ValidAccuracy=0.981547619048,	Num_of_errors=155,	Num_of_points=8400
+alpha=0.3,	lambda=0.0001,	ValidAccuracy=0.110714285714,	Num_of_errors=7470,	Num_of_points=8400
+alpha=0.3,	lambda=0.0003,	ValidAccuracy=0.110714285714,	Num_of_errors=7470,	Num_of_points=8400
+alpha=0.3,	lambda=0.001,	ValidAccuracy=0.985833333333,	Num_of_errors=119,	Num_of_points=8400
+End Learning
+*****************************
+time for learning: 2554.07978296sec	(42.5679963827min)
+Validation Best Accuracy: 0.985833333333
+Validation Best Error Rate: 0.0141666666667
+Validation Best Alpha: 0.3
+Validation Best Lambda: 0.001

@@ -1,0 +1,11 @@
+X(train): (42000, 784)
+y(train): (42000,)
+n_estimators: 4 [100, 300, 1000, 3000]
+Fitting 3 folds for each of 4 candidates, totalling 12 fits
+time for learning:1669.10461283sec (27.8184102138min)
+Best Score (Valid Set)=0.964904761905, Best Param={'n_estimators': 3000}
+	{'n_estimators': 100} 	0.961952380952
+	{'n_estimators': 300} 	0.964
+	{'n_estimators': 1000} 	0.964476190476
+	{'n_estimators': 3000} 	0.964904761905
+X(test): (28000, 784)
