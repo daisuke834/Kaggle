@@ -15,6 +15,7 @@ import os
 import csv
 from datetime import datetime
 from glob import glob
+import gc
 
 _ctime = datetime.now()
 _timestr = str(_ctime.year) +'_' + ('%02d'%_ctime.month) +'_' + ('%02d'%_ctime.day) +'_' + ('%02d%02d%02d'%(_ctime.hour,_ctime.minute,_ctime.second)) +'_'
@@ -42,6 +43,55 @@ _y_name_all = ['left_eye_center_x', 'left_eye_center_y', 'right_eye_center_x', '
 	'left_eyebrow_inner_end_x', 'left_eyebrow_inner_end_y', 'left_eyebrow_outer_end_x', 'left_eyebrow_outer_end_y', 'right_eyebrow_inner_end_x', 'right_eyebrow_inner_end_y', \
 	'right_eyebrow_outer_end_x', 'right_eyebrow_outer_end_y', 'nose_tip_x', 'nose_tip_y', 'mouth_left_corner_x', 'mouth_left_corner_y', 'mouth_right_corner_x', 'mouth_right_corner_y', \
 	'mouth_center_top_lip_x', 'mouth_center_top_lip_y', 'mouth_center_bottom_lip_x', 'mouth_center_bottom_lip_y']
+
+_data_pairs = [
+	dict(
+		columns=(
+			'left_eye_center_x', 'left_eye_center_y',
+			'right_eye_center_x', 'right_eye_center_y',
+			),
+		flip_indices=((0, 2), (1, 3)),
+		),
+	dict(
+		columns=(
+			'nose_tip_x', 'nose_tip_y',
+			),
+		flip_indices=(),
+		),
+	dict(
+		columns=(
+			'mouth_left_corner_x', 'mouth_left_corner_y',
+			'mouth_right_corner_x', 'mouth_right_corner_y',
+			'mouth_center_top_lip_x', 'mouth_center_top_lip_y',
+			),
+		flip_indices=((0, 2), (1, 3)),
+        ),
+	dict(
+        columns=(
+			'mouth_center_bottom_lip_x',
+			'mouth_center_bottom_lip_y',
+			),
+		flip_indices=(),
+		),
+	dict(
+		columns=(
+			'left_eye_inner_corner_x', 'left_eye_inner_corner_y',
+			'right_eye_inner_corner_x', 'right_eye_inner_corner_y',
+			'left_eye_outer_corner_x', 'left_eye_outer_corner_y',
+			'right_eye_outer_corner_x', 'right_eye_outer_corner_y',
+			),
+		flip_indices=((0, 2), (1, 3), (4, 6), (5, 7)),
+		),
+	dict(
+		columns=(
+			'left_eyebrow_inner_end_x', 'left_eyebrow_inner_end_y',
+			'right_eyebrow_inner_end_x', 'right_eyebrow_inner_end_y',
+			'left_eyebrow_outer_end_x', 'left_eyebrow_outer_end_y',
+			'right_eyebrow_outer_end_x', 'right_eyebrow_outer_end_y',
+			),
+		flip_indices=((0, 2), (1, 3), (4, 6), (5, 7)),
+		),
+	]
 
 def load(_test=False, _cols=None):
 	_fname = _file_test if _test else _file_train
@@ -72,7 +122,6 @@ def load2d(_test=False, _cols=None):
 
 _X_norm, _y_norm = load2d()
 _y_mean = (_y_norm*48.0+48.0).mean(axis=0)
-
 print 'X_norm.shape=', _X_norm.shape
 print 'X_norm.min=', _X_norm.min()
 print 'X_norm.max=', _X_norm.max()
@@ -106,17 +155,30 @@ _model.add(Dense(500))
 _model.add(Activation('relu'))
 _model.add(Dense(30))
 
-_list_model_arch_jsn = glob(_srch_model_arch_jsn)
-if len(_list_model_arch_jsn)>0:
-	_loaded_file = _list_model_arch_jsn[-1]
-	print 'loading', _loaded_file
-	_model = model_from_json(open(_loaded_file).read())
+
+_specialists = OrderedDict()
+for _cpair in _data_pairs:
+	print ''
+	print '**********************************************************'
+	print '**********************************************************'
+	gc.collect()
+	_cols = _cpair['columns']
+	print '***', _cols, '***'
+	_X_norm, _y_norm = load2d(_cols=_cols)
+	print 'X_norm.shape=', _X_norm.shape
+	print 'X_norm.min=', _X_norm.min()
+	print 'X_norm.max=', _X_norm.max()
+	print 'y_norm.shape=', _y_norm.shape
+	print 'y_norm.min=', _y_norm.min()
+	print 'y_norm.max=', _y_norm.max()
 	
-_list_model_weights = glob(_srch_model_weights)
-if len(_list_model_weights)>0:
-	_loaded_file = _list_model_weights[-1]
-	print 'loading', _loaded_file
-	_model.load_weights(_loaded_file)
+	_model_specialist = model_from_json(_model.to_json())
+	
+	_list_model_weights = glob(_srch_model_weights)
+	if len(_list_model_weights)>0:
+		_loaded_file = _list_model_weights[-1]
+		print 'loading', _loaded_file
+		_model_specialist.load_weights(_loaded_file)
 
 _sgd = SGD(lr=_learning_rate_start, momentum=0.9, nesterov=True)
 _model.compile(loss='mean_squared_error', optimizer=_sgd)
