@@ -1,3 +1,10 @@
 #!/bin/bash
+echo Start
 cd ~/Kaggle/FacialKeypointsDetection
-python ./kaggle_cnn.py >& kaggle_cnn.txt
+pwd
+python ./keras_cnn.py >& ./output/`date "+%Y_%m_%d_%H%M%S"`_keras_cnn.txt
+echo Program Ends
+echo Sync outputs
+aws s3 sync ./output s3://kaggle928374/FacialKeypointsDetection/output/
+#sudo shutdown -h now
+
