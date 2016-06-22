@@ -3,3 +3,5 @@
 /submit/
 /output/
 /*.bak
+/run.sh
+
