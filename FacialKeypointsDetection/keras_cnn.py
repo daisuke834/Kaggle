@@ -33,7 +33,7 @@ _file_model_predict		= 'output/' + _timestr + 'model_predict.png'
 _file_output_binary		= 'output/' + _timestr + 'output_binary.pickle'
 _image_size = 96
 
-_num_of_epoch = 50
+_num_of_epoch = 10
 _learning_rate_start = 0.03
 _learning_rate_end = 0.001
 
@@ -80,6 +80,7 @@ print 'y_norm.shape=', _y_norm.shape
 print 'y_norm.min=', _y_norm.min()
 print 'y_norm.max=', _y_norm.max()
 
+print 'Creating Model'
 _model = Sequential()
 
 _model.add(Convolution2D(32,3,3, input_shape=(1,96,96)))
@@ -120,6 +121,7 @@ if len(_list_model_weights)>0:
 
 _sgd = SGD(lr=_learning_rate_start, momentum=0.9, nesterov=True)
 _model.compile(loss='mean_squared_error', optimizer=_sgd)
+print 'Compiled Model'
 
 _learning_rates = np.linspace(_learning_rate_start, _learning_rate_end, _num_of_epoch)
 _change_learning_rate = LearningRateScheduler(lambda _epoch: float(_learning_rates[_epoch]))
