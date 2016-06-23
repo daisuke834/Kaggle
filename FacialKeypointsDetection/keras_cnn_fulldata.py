@@ -249,7 +249,7 @@ for _index, _cpair in enumerate(_data_pairs):
 	print 'Weights loaded'
 
 	#Freezing 1st and 2nd convolution layer
-	for _layer in _model.layers[:8]:
+	for _layer in _model.layers[:12]:
 		_layer.trainable = False
 	
 	_sgd = SGD(lr=_learning_rate_start, momentum=0.9, nesterov=True)
