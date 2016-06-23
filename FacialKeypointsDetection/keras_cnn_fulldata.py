@@ -36,8 +36,6 @@ _file_output_binary		= 'output/' + _timestr + 'output_binary.pickle'
 _image_size = 96
 
 _rand_seed = 42
-#_num_of_epoch = 3
-_num_of_epoch = 1000
 _learning_rate_start = 0.03
 _learning_rate_end = 0.001
 
@@ -176,6 +174,11 @@ for _index, _cpair in enumerate(_data_pairs):
 	print '_y_train.shape=', _y_train.shape
 	print '_X_val.shape=', _X_val.shape
 	print '_y_val.shape=', _y_val.shape
+	
+	#30min
+	_num_of_epoch = int(100./12658./float(_X_train.shape[0]))
+	#_num_of_epoch = 3
+	print 'Epoch=', _num_of_epoch
 	
 	#For Debug
 	#if _X_train.shape[0] > 200: _X_train = _X_train[:200]
