@@ -1,12 +1,0 @@
-Start
-/home/ubuntu/Kaggle/FacialKeypointsDetection
-Program Ends
-Sync outputs
-upload: output/2016_06_23_002523_model2_hist.png to s3://kaggle928374/FacialKeypointsDetection/output/2016_06_23_002523_model2_hist.png
-Completed 1 of 12 part(s) with 7 file(s) remainingupload: output/2016_06_23_002523_model_architecture.json to s3://kaggle928374/FacialKeypointsDetection/output/2016_06_23_002523_model_architecture.json
-Completed 2 of 12 part(s) with 6 file(s) remainingupload: output/2016_06_23_002523_model_predict.png to s3://kaggle928374/FacialKeypointsDetection/output/2016_06_23_002523_model_predict.png
-Completed 3 of 12 part(s) with 5 file(s) remainingupload: output/2016_06_23_002523_output_binary.pickle to s3://kaggle928374/FacialKeypointsDetection/output/2016_06_23_002523_output_binary.pickle
-Completed 4 of 12 part(s) with 4 file(s) remainingupload: output/2016_06_23_002523_output_int.csv to s3://kaggle928374/FacialKeypointsDetection/output/2016_06_23_002523_output_int.csv
-Completed 5 of 12 part(s) with 3 file(s) remainingupload: output/2016_06_23_002523_output_float.csv to s3://kaggle928374/FacialKeypointsDetection/output/2016_06_23_002523_output_float.csv
-Completed 6 of 12 part(s) with 2 file(s) remainingupload: output/2016_06_23_002519_keras_cnn.txt to s3://kaggle928374/FacialKeypointsDetection/output/2016_06_23_002519_keras_cnn.txt
-Completed 7 of 12 part(s) with 1 file(s) remainingCompleted 8 of 12 part(s) with 1 file(s) remainingCompleted 9 of 12 part(s) with 1 file(s) remainingCompleted 10 of 12 part(s) with 1 file(s) remainingCompleted 11 of 12 part(s) with 1 file(s) remainingCompleted 12 of 12 part(s) with 1 file(s) remainingupload: output/2016_06_23_002523_model_weights.h5 to s3://kaggle928374/FacialKeypointsDetection/output/2016_06_23_002523_model_weights.h5
