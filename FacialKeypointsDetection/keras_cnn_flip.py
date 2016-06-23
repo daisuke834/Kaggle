@@ -166,7 +166,7 @@ _learning_rates = np.linspace(_learning_rate_start, _learning_rate_end, _num_of_
 _change_learning_rate = LearningRateScheduler(lambda _epoch: float(_learning_rates[_epoch]))
 _early_stop = EarlyStopping(patience=100)
 
-_hist = _model.fit(_X_train, _y_train, nb_epoch=_num_of_epoch, validation_data=(_X_val, _y_val), callbacks=[_change_learning_rate, _early_stop], verbose=0)
+_hist = _model.fit(_X_train, _y_train, nb_epoch=_num_of_epoch, validation_data=(_X_val, _y_val), callbacks=[_change_learning_rate, _early_stop])
 _json_string = _model.to_json()
 with open(_file_model_arch_jsn, 'w') as _fh:
 	_fh.write(_json_string)

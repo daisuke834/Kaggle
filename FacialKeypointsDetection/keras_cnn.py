@@ -33,7 +33,8 @@ _file_model_predict		= 'output/' + _timestr + 'model_predict.png'
 _file_output_binary		= 'output/' + _timestr + 'output_binary.pickle'
 _image_size = 96
 
-_num_of_epoch = 5000
+_rand_seed = 42
+_num_of_epoch = 500
 _learning_rate_start = 0.03
 _learning_rate_end = 0.001
 
@@ -58,7 +59,7 @@ def load(_test=False, _cols=None):
 	if not _test:
 		_y_norm = _df[_df.columns[:-1]].values
 		_y_norm = (_y_norm -48.0) / 48.0
-		_X_norm, _y_norm = shuffle(_X_norm, _y_norm, random_state=42)
+		_X_norm, _y_norm = shuffle(_X_norm, _y_norm, random_state=_rand_seed)
 		_y_norm = _y_norm.astype(np.float32)
 	else:
 		_y_norm = None
@@ -125,7 +126,7 @@ _learning_rates = np.linspace(_learning_rate_start, _learning_rate_end, _num_of_
 _change_learning_rate = LearningRateScheduler(lambda _epoch: float(_learning_rates[_epoch]))
 _early_stop = EarlyStopping(patience=100)
 
-_hist = _model.fit(_X_norm, _y_norm, nb_epoch=_num_of_epoch, validation_split=0.02, callbacks=[_change_learning_rate, _early_stop])
+_hist = _model.fit(_X_norm, _y_norm, nb_epoch=_num_of_epoch, validation_split=0.2, callbacks=[_change_learning_rate, _early_stop])
 _json_string = _model.to_json()
 with open(_file_model_arch_jsn, 'w') as _fh:
 	_fh.write(_json_string)
