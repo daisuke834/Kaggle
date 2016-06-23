@@ -7,6 +7,7 @@ from keras.layers import Convolution2D, MaxPooling2D, Flatten, Dropout
 from keras.optimizers import SGD
 from keras.models import model_from_json
 from keras.callbacks import LearningRateScheduler, EarlyStopping
+from sklearn.cross_validation import train_test_split
 from six.moves import cPickle as pickle
 import matplotlib
 matplotlib.use('agg')
@@ -34,7 +35,8 @@ _file_model_predict		= 'output/' + _timestr + 'model_predict.png'
 _file_output_binary		= 'output/' + _timestr + 'output_binary.pickle'
 _image_size = 96
 
-_num_of_epoch = 50
+_num_of_epoch = 3
+#_num_of_epoch = 500
 _learning_rate_start = 0.03
 _learning_rate_end = 0.001
 
@@ -45,53 +47,35 @@ _y_name_all = ['left_eye_center_x', 'left_eye_center_y', 'right_eye_center_x', '
 	'mouth_center_top_lip_x', 'mouth_center_top_lip_y', 'mouth_center_bottom_lip_x', 'mouth_center_bottom_lip_y']
 
 _data_pairs = [
-	dict(
-		columns=(
-			'left_eye_center_x', 'left_eye_center_y',
-			'right_eye_center_x', 'right_eye_center_y',
-			),
-		flip_indices=((0, 2), (1, 3)),
-		),
-	dict(
-		columns=(
+	[
+		'left_eye_center_x', 'left_eye_center_y',
+		'right_eye_center_x', 'right_eye_center_y',
+	],
+	[
 			'nose_tip_x', 'nose_tip_y',
-			),
-		flip_indices=(),
-		),
-	dict(
-		columns=(
-			'mouth_left_corner_x', 'mouth_left_corner_y',
-			'mouth_right_corner_x', 'mouth_right_corner_y',
-			'mouth_center_top_lip_x', 'mouth_center_top_lip_y',
-			),
-		flip_indices=((0, 2), (1, 3)),
-        ),
-	dict(
-        columns=(
-			'mouth_center_bottom_lip_x',
-			'mouth_center_bottom_lip_y',
-			),
-		flip_indices=(),
-		),
-	dict(
-		columns=(
-			'left_eye_inner_corner_x', 'left_eye_inner_corner_y',
-			'right_eye_inner_corner_x', 'right_eye_inner_corner_y',
-			'left_eye_outer_corner_x', 'left_eye_outer_corner_y',
-			'right_eye_outer_corner_x', 'right_eye_outer_corner_y',
-			),
-		flip_indices=((0, 2), (1, 3), (4, 6), (5, 7)),
-		),
-	dict(
-		columns=(
-			'left_eyebrow_inner_end_x', 'left_eyebrow_inner_end_y',
-			'right_eyebrow_inner_end_x', 'right_eyebrow_inner_end_y',
-			'left_eyebrow_outer_end_x', 'left_eyebrow_outer_end_y',
-			'right_eyebrow_outer_end_x', 'right_eyebrow_outer_end_y',
-			),
-		flip_indices=((0, 2), (1, 3), (4, 6), (5, 7)),
-		),
+	],
+	[
+		'mouth_left_corner_x', 'mouth_left_corner_y',
+		'mouth_right_corner_x', 'mouth_right_corner_y',
+		'mouth_center_top_lip_x', 'mouth_center_top_lip_y',
+	],
+	[
+		'mouth_center_bottom_lip_x',
+		'mouth_center_bottom_lip_y',
+	],
+	[
+		'left_eye_inner_corner_x', 'left_eye_inner_corner_y',
+		'right_eye_inner_corner_x', 'right_eye_inner_corner_y',
+		'left_eye_outer_corner_x', 'left_eye_outer_corner_y',
+		'right_eye_outer_corner_x', 'right_eye_outer_corner_y',
+	],
+	[
+		'left_eyebrow_inner_end_x', 'left_eyebrow_inner_end_y',
+		'right_eyebrow_inner_end_x', 'right_eyebrow_inner_end_y',
+		'left_eyebrow_outer_end_x', 'left_eyebrow_outer_end_y',
+		'right_eyebrow_outer_end_x', 'right_eyebrow_outer_end_y',
 	]
+]
 
 def load(_test=False, _cols=None):
 	_fname = _file_test if _test else _file_train
@@ -120,6 +104,21 @@ def load2d(_test=False, _cols=None):
 	_X_norm = _X_norm.reshape(-1,1,96, 96)
 	return _X_norm, _y_norm
 
+def flip_image(_X_train, _y_train):
+	_flip_indices = [
+		(0, 2), (1, 3),
+		(4, 8), (5, 9), (6, 10), (7, 11),
+		(12, 16), (13, 17), (14, 18), (15, 19),
+		(22, 24), (23, 25),
+		]
+	_X_flipped = np.array(_X_train[:,:,:, ::-1])
+	_y_flipped = np.array(_y_train)
+	_y_flipped[:, ::2] = _y_flipped[:, ::2] * -1
+	for _index in range(_y_train.shape[0]):
+		for _index_a, _index_b in _flip_indices:
+			_y_flipped[_index, _index_a], _y_flipped[_index, _index_b] = (_y_flipped[_index, _index_b], _y_flipped[_index, _index_a])
+	return _X_flipped, _y_flipped
+
 _X_norm, _y_norm = load2d()
 _y_mean = (_y_norm*48.0+48.0).mean(axis=0)
 print 'X_norm.shape=', _X_norm.shape
@@ -129,6 +128,10 @@ print 'y_norm.shape=', _y_norm.shape
 print 'y_norm.min=', _y_norm.min()
 print 'y_norm.max=', _y_norm.max()
 
+_X_test_norm, _ = load2d(_test=True)
+_predicts_test = np.ndarray((len(_X_test_norm), len(_y_name_all)), dtype=np.float)
+
+print 'Creating Model'
 _model = Sequential()
 
 _model.add(Convolution2D(32,3,3, input_shape=(1,96,96)))
@@ -155,47 +158,66 @@ _model.add(Dense(500))
 _model.add(Activation('relu'))
 _model.add(Dense(30))
 
-
-_specialists = OrderedDict()
-for _cpair in _data_pairs:
+for _index, _cols in enumerate(_data_pairs):
 	print ''
 	print '**********************************************************'
 	print '**********************************************************'
 	gc.collect()
-	_cols = _cpair['columns']
-	print '***', _cols, '***'
+	print '***', _index, _cols, '***'
 	_X_norm, _y_norm = load2d(_cols=_cols)
 	print 'X_norm.shape=', _X_norm.shape
-	print 'X_norm.min=', _X_norm.min()
-	print 'X_norm.max=', _X_norm.max()
 	print 'y_norm.shape=', _y_norm.shape
-	print 'y_norm.min=', _y_norm.min()
-	print 'y_norm.max=', _y_norm.max()
+	#Axis 2 offset should be modified
+	#_X_flipped, _y_flipped = flip_image(_X_train, _y_train)
+	#_X_train = np.vstack((_X_train, _X_flipped))
+	#_y_train = np.vstack((_y_train, _y_flipped))
 	
+	print 'Re-constructing model for specific Ys'
 	_model_specialist = model_from_json(_model.to_json())
-	
+	_list_model_arch_jsn = glob(_srch_model_arch_jsn)
+	if len(_list_model_arch_jsn)>0:
+		_loaded_file = _list_model_arch_jsn[-1]
+		print 'loading', _loaded_file
+		_model_specialist = model_from_json(open(_loaded_file).read())
 	_list_model_weights = glob(_srch_model_weights)
 	if len(_list_model_weights)>0:
 		_loaded_file = _list_model_weights[-1]
 		print 'loading', _loaded_file
 		_model_specialist.load_weights(_loaded_file)
+	_model_specialist.layers.pop()
+	_model_specialist.outputs = [_model_specialist.layers[-1].output]
+	_model_specialist.layers[-1].outbound_nodes = []
+	_model_specialist.add(Dense(len(_cols)))
 
-_sgd = SGD(lr=_learning_rate_start, momentum=0.9, nesterov=True)
-_model.compile(loss='mean_squared_error', optimizer=_sgd)
+	_sgd = SGD(lr=_learning_rate_start, momentum=0.9, nesterov=True)
+	_model_specialist.compile(loss='mean_squared_error', optimizer=_sgd)
 
-_learning_rates = np.linspace(_learning_rate_start, _learning_rate_end, _num_of_epoch)
-_change_learning_rate = LearningRateScheduler(lambda _epoch: float(_learning_rates[_epoch]))
-_early_stop = EarlyStopping(patience=100)
+	_learning_rates = np.linspace(_learning_rate_start, _learning_rate_end, _num_of_epoch)
+	_change_learning_rate = LearningRateScheduler(lambda _epoch: float(_learning_rates[_epoch]))
+	_early_stop = EarlyStopping(patience=100)
 
-_hist = _model.fit(_X_norm, _y_norm, nb_epoch=_num_of_epoch, validation_split=0.2, callbacks=[_change_learning_rate, _early_stop])
-_json_string = _model.to_json()
-with open(_file_model_arch_jsn, 'w') as _fh:
-	_fh.write(_json_string)
-_model.save_weights(_file_model_weights)
+	print 'Training models for specific Ys'
+	_hist = _model_specialist.fit(_X_norm, _y_norm, nb_epoch=_num_of_epoch, validation_split=0.2, callbacks=[_change_learning_rate, _early_stop])
 
+	_ctime2 = datetime.now()
+	_timestr2 = str(_ctime2.year) +'_' + ('%02d'%_ctime2.month) +'_' + ('%02d'%_ctime2.day) +'_' + ('%02d%02d%02d'%(_ctime2.hour,_ctime2.minute,_ctime2.second)) +'_'
+	_file_model_arch_jsn	= 'output/' + _timestr2 + str(_index) + '_model_architecture.json'
+	_file_model_weights		= 'output/' + _timestr2 + str(_index) + '_model_weights.h5'
+	_json_string = _model_specialist.to_json()
+	with open(_file_model_arch_jsn, 'w') as _fh:
+		_fh.write(_json_string)
+	_model.save_weights(_file_model_weights)
 
-plt.plot(_hist.history['loss'], linewidth=3, label='train')
-plt.plot(_hist.history['val_loss'], linewidth=3, label='valid')
+	plt.plot(_hist.history['loss'], linewidth=3, label=str(_index)+'_train')
+	plt.plot(_hist.history['val_loss'], linewidth=3, label=str(_index)+'_valid')
+
+	_y_test_norm = _model.predict(_X_test_norm)
+
+	for _cCol_offset, _cCol_name in enumerate(_cols):
+		_cCol_index = _y_name_all.index(_cCol_name)
+		_predicts_test_norm[:,_cCol_index] = _y_test[:,_cCol_offset]
+	print 'End Learning of current pair'
+		
 plt.grid()
 plt.legend()
 plt.xlabel('epoch')
@@ -205,25 +227,23 @@ plt.yscale('log')
 plt.savefig(_file_learning_curve)
 plt.clf()
 
-_X_test_norm, _ = load2d(_test=True)
-_y_test_norm = _model.predict(_X_test_norm)
-_y_test = _y_test_norm*48.0+48.0
-
 def plot_sample(_X, _y, _axis):
 	_img = _X.reshape(96, 96)
 	_axis.imshow(_img, cmap='gray')
 	_axis.scatter(_y[0::2] * 48 + 48, _y[1::2] * 48 + 48, marker='x', s=10)
+
+_predicts_test = _predicts_test_norm*48.0+48.0
     
 _fig = plt.figure(figsize=(6,6))
 _fig.subplots_adjust(left=0, right=1, bottom=0, top=1, hspace=0.05, wspace=0.05)
 for _i in range(16):
 	_axis = _fig.add_subplot(4,4, _i+1, xticks=[], yticks=[])
-	plot_sample(_X_test_norm[_i], _y_test_norm[_i], _axis)
+	plot_sample(_X_test_norm[_i], _predicts_test_norm[_i], _axis)
 plt.savefig(_file_model_predict)
 plt.clf()
 
 _output_binary = dict()
-_output_binary['_y_test']=_y_test
+_output_binary['_predicts_test']=_predicts_test
 with open(_file_output_binary, 'wb') as _fh:
 	pickle.dump(_output_binary, _fh, pickle.HIGHEST_PROTOCOL)
 
@@ -235,7 +255,7 @@ print '**********************************************************'
 print '**********************************************************'
 print 'Predicted Y'
 _anomaly_count_list_per_name = np.zeros(len(_y_name_all), dtype=np.int)
-_anomaly_count_list_per_Image = np.zeros(len(_y_test[:,0]))
+_anomaly_count_list_per_Image = np.zeros(len(_predicts_test[:,0]))
 _temp_str = 'Row\t'
 for _column, _temp_name in enumerate(_y_name_all):
 	_temp_str = _temp_str + _temp_name
@@ -243,16 +263,16 @@ for _column, _temp_name in enumerate(_y_name_all):
 		_temp_str = _temp_str + '\t'
 print _temp_str
 _temp_str=''
-for _row in range(len(_y_test[:,0])):
-	#_temp_str = str(_row) + '\t'
+for _row in range(len(_predicts_test[:,0])):
+	_temp_str = str(_row) + '\t'
 	for _column in range(len(_y_name_all)):
-		#_temp_str = _temp_str + str(int(_y_test[_row, _column]))
-		#if _column != len(_y_name_all)-1:
-		#	_temp_str = _temp_str + '\t'
-		if _y_test[_row, _column] <0 or _y_test[_row, _column]>_image_size:
+		_temp_str = _temp_str + str(int(_predicts_test[_row, _column]))
+		if _column != len(_y_name_all)-1:
+			_temp_str = _temp_str + '\t'
+		if _predicts_test[_row, _column] <0 or _predicts_test[_row, _column]>_image_size:
 			_anomaly_count_list_per_name[_column] = _anomaly_count_list_per_name[_column]+1
 			_anomaly_count_list_per_Image[_row]   = _anomaly_count_list_per_Image[_row]+1
-	#print _temp_str
+	print _temp_str
 
 print ''
 print '***********************************'
@@ -266,7 +286,7 @@ _FeatureNames = np.array(_lookup['FeatureName'])
 for _index in range(len(_RowIds)):
 	_row = _ImageIds[_index]-1
 	_column = _y_name_all.index(_FeatureNames[_index])
-	_cpredict = _y_test[_row, _column]
+	_cpredict = _predicts_test[_row, _column]
 	if _cpredict<0 or _cpredict>_image_size:
 		_cpredict = _y_mean[_column]
 	_writecsv.writerow([_RowIds[_index],_cpredict])
@@ -281,7 +301,7 @@ _FeatureNames = np.array(_lookup['FeatureName'])
 for _index in range(len(_RowIds)):
 	_row	= _ImageIds[_index]-1
 	_column = _y_name_all.index(_FeatureNames[_index])
-	_cpredict = _y_test[_row, _column]
+	_cpredict = _predicts_test[_row, _column]
 	_cpredict = int(_cpredict)
 	if _cpredict<0 or _cpredict>_image_size:
 		_cpredict = int(_y_mean[_column])
