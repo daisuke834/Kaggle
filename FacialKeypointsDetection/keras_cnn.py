@@ -33,7 +33,7 @@ _file_model_predict		= 'output/' + _timestr + 'model_predict.png'
 _file_output_binary		= 'output/' + _timestr + 'output_binary.pickle'
 _image_size = 96
 
-_num_of_epoch = 500
+_num_of_epoch = 5000
 _learning_rate_start = 0.03
 _learning_rate_end = 0.001
 
