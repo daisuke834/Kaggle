@@ -91,12 +91,17 @@ def flip_image(_X, _y):
 _X_norm, _y_norm = load2d()
 _y_mean = (_y_norm*48.0+48.0).mean(axis=0)
 _X_train, _X_val, _y_train, _y_val = train_test_split(_X_norm, _y_norm, test_size=0.1, random_state=_rand_seed)
-_X_train_flipped, _y_train_flipped = flip_image(_X_train, _y_train)
 
+_X_train_flipped, _y_train_flipped = flip_image(_X_train, _y_train)
 _X_train = np.vstack((_X_train, _X_train_flipped))
 _y_train = np.vstack((_y_train, _y_train_flipped))
 
+_X_val_flipped, _y_val_flipped = flip_image(_X_val, _y_val)
+_X_val = np.vstack((_X_val, _X_val_flipped))
+_y_val = np.vstack((_y_val, _y_val_flipped))
+
 del(_X_train_flipped); del(_y_train_flipped);
+del(_X_val_flipped); del(_y_val_flipped);
 del(_X_norm); del(_y_norm);
 gc.collect()
 
@@ -161,7 +166,7 @@ _learning_rates = np.linspace(_learning_rate_start, _learning_rate_end, _num_of_
 _change_learning_rate = LearningRateScheduler(lambda _epoch: float(_learning_rates[_epoch]))
 _early_stop = EarlyStopping(patience=100)
 
-_hist = _model.fit(_X_train, _y_train, nb_epoch=_num_of_epoch, validation_data=(_X_val, _y_val), callbacks=[_change_learning_rate, _early_stop])
+_hist = _model.fit(_X_train, _y_train, nb_epoch=_num_of_epoch, validation_data=(_X_val, _y_val), callbacks=[_change_learning_rate, _early_stop], verbose=0)
 _json_string = _model.to_json()
 with open(_file_model_arch_jsn, 'w') as _fh:
 	_fh.write(_json_string)
@@ -173,7 +178,7 @@ plt.grid()
 plt.legend()
 plt.xlabel('epoch')
 plt.ylabel('loss')
-plt.ylim(1e-3, 1e-1)
+plt.ylim(1e-4, 1e-2)
 plt.yscale('log')
 plt.savefig(_file_learning_curve)
 plt.clf()
