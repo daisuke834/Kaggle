@@ -177,7 +177,7 @@ for _index, _cpair in enumerate(_data_pairs):
 	print '_y_val.shape=', _y_val.shape
 	
 	#_num_of_epoch = int(50.*12658./float(_X_train.shape[0]))
-	_num_of_epoch = 500
+	_num_of_epoch = 1000
 	print 'Epoch=', _num_of_epoch
 	print 'Learning Rate Start=', _learning_rate_start
 	print 'Learning Rate End=', _learning_rate_end
@@ -276,13 +276,15 @@ for _index, _cpair in enumerate(_data_pairs):
 
 	plt.plot(_hist.history['loss'], linewidth=3, label=str(_index)+'_train')
 	plt.plot(_hist.history['val_loss'], linewidth=3, label=str(_index)+'_valid')
+	for _aaa in range(len(_hist.history['loss'])):
+		print _aaa, '\t', (_hist.history['loss'])[_aaa], '\t', (_hist.history['val_loss'])[_aaa]
 
 	_y_test_norm = _model.predict(_X_test_norm)
 
 	for _cCol_offset, _cCol_name in enumerate(_cols):
 		_cCol_index = _y_name_all.index(_cCol_name)
 		_predicts_test_norm[:,_cCol_index] = _y_test_norm[:,_cCol_offset]
-	print 'End Learning of current pair'
+	print 'End Learning of current pair:', _index
 		
 plt.grid()
 plt.legend()
