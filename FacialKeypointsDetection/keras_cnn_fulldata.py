@@ -36,7 +36,8 @@ _file_output_binary		= 'output/' + _timestr + 'output_binary.pickle'
 _image_size = 96
 
 _rand_seed = 42
-_learning_rate_start = 0.03
+_learning_rate_start = 0.01
+#_learning_rate_start = 0.03
 _learning_rate_end = 0.001
 
 _y_name_all = ['left_eye_center_x', 'left_eye_center_y', 'right_eye_center_x', 'right_eye_center_y', 'left_eye_inner_corner_x', 'left_eye_inner_corner_y', \
@@ -175,10 +176,11 @@ for _index, _cpair in enumerate(_data_pairs):
 	print '_X_val.shape=', _X_val.shape
 	print '_y_val.shape=', _y_val.shape
 	
-	#30min
-	_num_of_epoch = int(100./12658./float(_X_train.shape[0]))
+	_num_of_epoch = int(50.*12658./float(_X_train.shape[0]))
 	#_num_of_epoch = 3
 	print 'Epoch=', _num_of_epoch
+	print 'Learning Rate Start=', _learning_rate_start
+	print 'Learning Rate End=', _learning_rate_end
 	
 	#For Debug
 	#if _X_train.shape[0] > 200: _X_train = _X_train[:200]
@@ -248,9 +250,13 @@ for _index, _cpair in enumerate(_data_pairs):
 		raise Exception('File of saved weights doesnot exist.')
 	print 'Weights loaded'
 
-	#Freezing 1st and 2nd convolution layer
-	for _layer in _model.layers[:12]:
-		_layer.trainable = False
+	#Freezing convolution layers
+	if _index == 0 or _index == 1 or _index == 3:
+		print 'Do NOT freeze layers.'
+	else:
+		print 'Freezing layers.'
+		for _layer in _model.layers[:8]:
+			_layer.trainable = False
 	
 	_sgd = SGD(lr=_learning_rate_start, momentum=0.9, nesterov=True)
 	_model.compile(loss='mean_squared_error', optimizer=_sgd)
@@ -316,23 +322,23 @@ print '**********************************************************'
 print 'Predicted Y'
 _anomaly_count_list_per_name = np.zeros(len(_y_name_all), dtype=np.int)
 _anomaly_count_list_per_Image = np.zeros(len(_predicts_test[:,0]))
-_temp_str = 'Row\t'
-for _column, _temp_name in enumerate(_y_name_all):
-	_temp_str = _temp_str + _temp_name
-	if _column != len(_y_name_all)-1:
-		_temp_str = _temp_str + '\t'
-print _temp_str
-_temp_str=''
+#_temp_str = 'Row\t'
+#for _column, _temp_name in enumerate(_y_name_all):
+#	_temp_str = _temp_str + _temp_name
+#	if _column != len(_y_name_all)-1:
+#		_temp_str = _temp_str + '\t'
+#print _temp_str
+#_temp_str=''
 for _row in range(len(_predicts_test[:,0])):
-	_temp_str = str(_row) + '\t'
+	#_temp_str = str(_row) + '\t'
 	for _column in range(len(_y_name_all)):
-		_temp_str = _temp_str + str(int(_predicts_test[_row, _column]))
-		if _column != len(_y_name_all)-1:
-			_temp_str = _temp_str + '\t'
+		#_temp_str = _temp_str + str(int(_predicts_test[_row, _column]))
+		#if _column != len(_y_name_all)-1:
+		#	_temp_str = _temp_str + '\t'
 		if _predicts_test[_row, _column] <0 or _predicts_test[_row, _column]>_image_size:
 			_anomaly_count_list_per_name[_column] = _anomaly_count_list_per_name[_column]+1
 			_anomaly_count_list_per_Image[_row]   = _anomaly_count_list_per_Image[_row]+1
-	print _temp_str
+	#print _temp_str
 
 print ''
 print '***********************************'
