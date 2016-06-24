@@ -176,8 +176,8 @@ for _index, _cpair in enumerate(_data_pairs):
 	print '_X_val.shape=', _X_val.shape
 	print '_y_val.shape=', _y_val.shape
 	
-	_num_of_epoch = int(50.*12658./float(_X_train.shape[0]))
-	#_num_of_epoch = 3
+	#_num_of_epoch = int(50.*12658./float(_X_train.shape[0]))
+	_num_of_epoch = 500
 	print 'Epoch=', _num_of_epoch
 	print 'Learning Rate Start=', _learning_rate_start
 	print 'Learning Rate End=', _learning_rate_end
@@ -251,7 +251,7 @@ for _index, _cpair in enumerate(_data_pairs):
 	print 'Weights loaded'
 
 	#Freezing convolution layers
-	if _index == 0 or _index == 1 or _index == 3:
+	if True or _index == 0 or _index == 1 or _index == 3:
 		print 'Do NOT freeze layers.'
 	else:
 		print 'Freezing layers.'
