@@ -81,6 +81,7 @@ print 'y_norm.shape=', _y_norm.shape
 print 'y_norm.min=', _y_norm.min()
 print 'y_norm.max=', _y_norm.max()
 
+print 'Creating Model'
 _model = Sequential()
 
 _model.add(Convolution2D(32,3,3, input_shape=(1,96,96)))
@@ -121,6 +122,7 @@ if len(_list_model_weights)>0:
 
 _sgd = SGD(lr=_learning_rate_start, momentum=0.9, nesterov=True)
 _model.compile(loss='mean_squared_error', optimizer=_sgd)
+print 'Compiled Model'
 
 _learning_rates = np.linspace(_learning_rate_start, _learning_rate_end, _num_of_epoch)
 _change_learning_rate = LearningRateScheduler(lambda _epoch: float(_learning_rates[_epoch]))
