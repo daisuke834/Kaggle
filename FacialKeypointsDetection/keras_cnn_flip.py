@@ -7,6 +7,7 @@ from keras.layers import Convolution2D, MaxPooling2D, Flatten, Dropout
 from keras.optimizers import SGD
 from keras.models import model_from_json
 from keras.callbacks import LearningRateScheduler, EarlyStopping
+from sklearn.cross_validation import train_test_split
 from six.moves import cPickle as pickle
 import matplotlib
 matplotlib.use('agg')
@@ -15,6 +16,7 @@ import os
 import csv
 from datetime import datetime
 from glob import glob
+import gc
 
 _ctime = datetime.now()
 _timestr = str(_ctime.year) +'_' + ('%02d'%_ctime.month) +'_' + ('%02d'%_ctime.day) +'_' + ('%02d%02d%02d'%(_ctime.hour,_ctime.minute,_ctime.second)) +'_'
@@ -34,7 +36,7 @@ _file_output_binary		= 'output/' + _timestr + 'output_binary.pickle'
 _image_size = 96
 
 _rand_seed = 42
-_num_of_epoch = 500
+_num_of_epoch = 1000
 _learning_rate_start = 0.03
 _learning_rate_end = 0.001
 
@@ -71,17 +73,54 @@ def load2d(_test=False, _cols=None):
 	_X_norm = _X_norm.reshape(-1,1,96, 96)
 	return _X_norm, _y_norm
 
+def flip_image(_X, _y):
+	_flip_indices = [
+		(0, 2), (1, 3),
+		(4, 8), (5, 9), (6, 10), (7, 11),
+		(12, 16), (13, 17), (14, 18), (15, 19),
+		(22, 24), (23, 25),
+		]
+	_X_flipped = np.array(_X[:,:,:, ::-1])
+	_y_flipped = np.array(_y)
+	_y_flipped[:, ::2] = _y_flipped[:, ::2] * -1
+	for _index in range(_y.shape[0]):
+		for _index_a, _index_b in _flip_indices:
+			_y_flipped[_index, _index_a], _y_flipped[_index, _index_b] = (_y_flipped[_index, _index_b], _y_flipped[_index, _index_a])
+	return _X_flipped, _y_flipped
+
 _X_norm, _y_norm = load2d()
 _y_mean = (_y_norm*48.0+48.0).mean(axis=0)
+_X_train, _X_val, _y_train, _y_val = train_test_split(_X_norm, _y_norm, test_size=0.1, random_state=_rand_seed)
 
-print 'X_norm.shape=', _X_norm.shape
-print 'X_norm.min=', _X_norm.min()
-print 'X_norm.max=', _X_norm.max()
-print 'y_norm.shape=', _y_norm.shape
-print 'y_norm.min=', _y_norm.min()
-print 'y_norm.max=', _y_norm.max()
+_X_train_flipped, _y_train_flipped = flip_image(_X_train, _y_train)
+_X_train = np.vstack((_X_train, _X_train_flipped))
+_y_train = np.vstack((_y_train, _y_train_flipped))
 
-print 'Creating Model'
+_X_val_flipped, _y_val_flipped = flip_image(_X_val, _y_val)
+_X_val = np.vstack((_X_val, _X_val_flipped))
+_y_val = np.vstack((_y_val, _y_val_flipped))
+
+del(_X_train_flipped); del(_y_train_flipped);
+del(_X_val_flipped); del(_y_val_flipped);
+del(_X_norm); del(_y_norm);
+gc.collect()
+
+print 'Num of Epoch=', _num_of_epoch
+print ''
+print '_X_train.shape=', _X_train.shape
+print '_X_train.min=', _X_train.min()
+print '_X_train.max=', _X_train.max()
+print '_y_train.shape=', _y_train.shape
+print '_y_train.min=', _y_train.min()
+print '_y_train.max=', _y_train.max()
+print ''
+print '_X_val.shape=', _X_val.shape
+print '_X_val.min=', _X_val.min()
+print '_X_val.max=', _X_val.max()
+print '_y_val.shape=', _y_val.shape
+print '_y_val.min=', _y_val.min()
+print '_y_val.max=', _y_val.max()
+
 _model = Sequential()
 
 _model.add(Convolution2D(32,3,3, input_shape=(1,96,96)))
@@ -122,18 +161,16 @@ if len(_list_model_weights)>0:
 
 _sgd = SGD(lr=_learning_rate_start, momentum=0.9, nesterov=True)
 _model.compile(loss='mean_squared_error', optimizer=_sgd)
-print 'Compiled Model'
 
 _learning_rates = np.linspace(_learning_rate_start, _learning_rate_end, _num_of_epoch)
 _change_learning_rate = LearningRateScheduler(lambda _epoch: float(_learning_rates[_epoch]))
 _early_stop = EarlyStopping(patience=100)
 
-_hist = _model.fit(_X_norm, _y_norm, nb_epoch=_num_of_epoch, validation_split=0.2, callbacks=[_change_learning_rate, _early_stop])
+_hist = _model.fit(_X_train, _y_train, nb_epoch=_num_of_epoch, validation_data=(_X_val, _y_val), callbacks=[_change_learning_rate, _early_stop])
 _json_string = _model.to_json()
 with open(_file_model_arch_jsn, 'w') as _fh:
 	_fh.write(_json_string)
 _model.save_weights(_file_model_weights)
-
 
 plt.plot(_hist.history['loss'], linewidth=3, label='train')
 plt.plot(_hist.history['val_loss'], linewidth=3, label='valid')
@@ -141,7 +178,7 @@ plt.grid()
 plt.legend()
 plt.xlabel('epoch')
 plt.ylabel('loss')
-plt.ylim(1e-3, 1e-1)
+plt.ylim(1e-4, 1e-2)
 plt.yscale('log')
 plt.savefig(_file_learning_curve)
 plt.clf()

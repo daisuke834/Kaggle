@@ -3,3 +3,6 @@
 /submit/
 /output/
 /*.bak
+/run.sh
+/nohup.out
+
